@@ -3,17 +3,22 @@ import { galleryItems } from "./gallery-items.js";
 
 const galleryContainer = document.querySelector(`.gallery`);
 
+galleryContainer.addEventListener(`click`, (event) => {
+  event.preventDefault();
+  console.log(event.target);
+});
+
 function createImageMarkup(markups) {
   return markups
     .map(
       ({ preview, original, description }) =>
         `<div class="gallery__item">
-          <a class="gallery__link" href="large-image.jpg">
+          <a class="gallery__link" href="${original}">
             <img
               class="gallery__image"
-              src="small-image.jpg"
-              data-source="large-image.jpg"
-              alt="Image description"
+              src="${preview}"
+              data-source="${original}"
+              alt="${description}"
             />
           </a>
         </div>`
@@ -21,4 +26,7 @@ function createImageMarkup(markups) {
     .join("");
 }
 
-console.log(createImageMarkup(galleryItems));
+galleryContainer.insertAdjacentHTML(
+  "beforeend",
+  createImageMarkup(galleryItems)
+);
