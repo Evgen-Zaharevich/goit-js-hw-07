@@ -3,10 +3,12 @@ import { galleryItems } from "./gallery-items.js";
 
 const galleryContainer = document.querySelector(`.gallery`);
 
-galleryContainer.addEventListener(`click`, (event) => {
-  event.preventDefault();
-  console.log(event.target);
-});
+galleryContainer.addEventListener(`click`, onProhibitsDownloadingImage);
+galleryContainer.addEventListener(`click`, onModalVievingImage);
+galleryContainer.insertAdjacentHTML(
+  "beforeend",
+  createImageMarkup(galleryItems)
+);
 
 function createImageMarkup(markups) {
   return markups
@@ -26,7 +28,39 @@ function createImageMarkup(markups) {
     .join("");
 }
 
-galleryContainer.insertAdjacentHTML(
-  "beforeend",
-  createImageMarkup(galleryItems)
-);
+function onProhibitsDownloadingImage(event) {
+  event.preventDefault();
+}
+
+function onModalVievingImage(event) {
+  const viewediImage = event.target.dataset.source;
+
+  if (event.target.nodeName !== "IMG") return;
+  const instance = basicLightbox.create(
+    `
+    <img src="${viewediImage}">
+`,
+    {
+      onShow: (instance) => {
+        document.addEventListener(
+          `keydown`,
+          closingModalWindowClickingOnEscape
+        );
+      },
+      onClose: (instance) => {
+        document.removeEventListener(
+          `keydown`,
+          closingModalWindowClickingOnEscape
+        );
+      },
+    }
+  );
+
+  instance.show();
+
+  function closingModalWindowClickingOnEscape(event) {
+    console.log(event);
+    if (event.code !== `Escape`) return;
+    instance.close();
+  }
+}
